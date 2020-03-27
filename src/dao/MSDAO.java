@@ -1,10 +1,20 @@
 package dao;
 
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import model.MSDTO;
+import model.SearchMSCondition;
+
 public class MSDAO {
-    public List<Pokemon> findData() {
+    public List<MSList> findData() {
 
 		Connection conn = null;
 		List<MSList> msList = new ArrayList<MSList>();
+		SearchMSCondition searchMSCondition = new SearchMSCondition();
 
 		try {
 
@@ -12,31 +22,32 @@ public class MSDAO {
 			Class.forName("org.h2.Driver");
 
 			//データベースに接続
-			conn = DriverManager.getConnection("jdbc:h2:C:/database/gundam", "sa", "");
+			conn = DriverManager.getConnection("jdbc:h2:C:/database/gundam", "majiko", "majiko");
 
 			//SELECT文を準備
-			String sql = "SELECT NUMBER, NAME, AFFLIATION, HEIGHT, WEIGHT, PILOT, IMAGE FROM GUNDAMMS";
+			String sql = "SELECT NUMBER, NAME, AFFLIATION, HEIGHT, WEIGHT, PILOT, IMAGE FROM GUNDAMMS WHERE NUMBER LIKE %?% OR NAME LIKE %?% OR AFFILIATION LIKE %?% OR PILOT LIKE %?%";
             PreparedStatement pStmt = conn.prepareStatement(sql);
-            pStmt.setString(1, MSData.getName());
+            pStmt.setString(1, searchMSCondition.getNumber());
+            pStmt.setString(2, searchMSCondition.getName());
+            pStmt.setString(3, searchMSCondition.getAffliation());
+            pStmt.setString(4, searchMSCondition.getPilot());
 
 			//SELECT文を実行し結果表を取得
 			ResultSet rs = pStmt.executeQuery();
 
-			//Pokemonインスタンスに設定しArrayListインスタンスに追加
+			//DTOに取得した値をセット
+			MSDTO msDTO = new MSDTO();
 			while(rs.next()){
-				String number = rs.getString("NUMBER");
-				String name = rs.getString("NAME");
-				String affliation = rs.getString("AFFLIATION");
-				double height = rs.getDouble("HEIGHT");
-				double weight = rs.getDouble("WEIGHT");
-				String pilot = rs.getString("PILOT");
-                String image = rs.getString("IMAGE");
+				msDTO.setNumber(rs.getString("NUMBER"));
+				msDTO.setName(rs.getString("NAME"));
+				msDTO.setAffiliation(rs.getString("AFFLIATION"));
+				msDTO.setHeight(rs.getDouble("HEIGHT"));
+				msDTO.setWeight(rs.getDouble("WEIGHT"));
+				msDTO.setPilot(rs.getString("PILOT"));
+                msDTO.setImage(rs.getString("IMAGE"));
 
-			//取得した値をPokemonインスタンスに格納
-			Pokemon pokemon = new Pokemon(id, pokename, type, height, weight, characteristic);
-
-			//ArrayListインスタンスにPokemonインスタンスを追加
-			pokeList.add(pokemon);
+			//ArrayListインスタンスにDTOインスタンスを追加
+			msList.add(msDTO);
 			}
 		}
 		 catch (SQLException e){
@@ -56,6 +67,6 @@ public class MSDAO {
 				 }
 			 }
 		 }
-		 return pokeList;
+		 return msList;
 		}
 }

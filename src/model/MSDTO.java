@@ -2,17 +2,20 @@ package model;
 
 import java.io.Serializable;
 
-public class MSData implements Serializable {
+public class MSDTO implements Serializable {
     private String number;
     private String name;
     private String affiliation;
+    private double height;
+    private double weight;
     private String pilot;
+    private String image;
 
     //引数なしのコンストラクタ
-    public MSData() {}
+    public MSDTO() {}
 
     //引数ありのコンストラクタ
-    public MSData(String number, String name, String affiliation, String pilot) {
+    public MSDTO(String number, String name, String affiliation, String pilot) {
         this.number = number;
         this.name = name;
         this.affiliation = affiliation;
@@ -44,6 +47,22 @@ public class MSData implements Serializable {
 		this.affiliation = affiliation;
 	}
 
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
+	}
+
+	public double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+
 	public String getPilot() {
 		return pilot;
 	}
@@ -52,5 +71,12 @@ public class MSData implements Serializable {
 		this.pilot = pilot;
 	}
 
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
 
 }
