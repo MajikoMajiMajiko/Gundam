@@ -19,6 +19,10 @@ public class SearchMSCondition implements Serializable {
 		this.pilot = pilot;
 	}
 
+	public SearchMSCondition(String name) {
+		this.name = name;
+	}
+
 	//getter setter
 	public String getNumber() {
 		return number;

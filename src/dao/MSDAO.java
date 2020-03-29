@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,11 +11,10 @@ import model.MSDTO;
 import model.SearchMSCondition;
 
 public class MSDAO {
-    public List<MSList> findData() {
+    public ArrayList<MSDTO> findMSData(SearchMSCondition searchMSCondition) {
 
 		Connection conn = null;
-		List<MSList> msList = new ArrayList<MSList>();
-		SearchMSCondition searchMSCondition = new SearchMSCondition();
+		ArrayList<MSDTO> msList = new ArrayList<MSDTO>();
 
 		try {
 
@@ -25,12 +25,13 @@ public class MSDAO {
 			conn = DriverManager.getConnection("jdbc:h2:C:/database/gundam", "majiko", "majiko");
 
 			//SELECT文を準備
-			String sql = "SELECT NUMBER, NAME, AFFLIATION, HEIGHT, WEIGHT, PILOT, IMAGE FROM GUNDAMMS WHERE NUMBER LIKE %?% OR NAME LIKE %?% OR AFFILIATION LIKE %?% OR PILOT LIKE %?%";
-            PreparedStatement pStmt = conn.prepareStatement(sql);
-            pStmt.setString(1, searchMSCondition.getNumber());
-            pStmt.setString(2, searchMSCondition.getName());
-            pStmt.setString(3, searchMSCondition.getAffliation());
-            pStmt.setString(4, searchMSCondition.getPilot());
+			//String sql = "SELECT NUMBER, NAME, AFFILIATION, HEIGHT, WEIGHT, PILOT, IMAGE FROM GUNDAMMS WHERE NAME LIKE ?";
+			String sql = "SELECT * FROM GUNDAMMS WHERE NAME LIKE ?";
+			PreparedStatement pStmt = conn.prepareStatement(sql);
+			//pStmt.setString(1, searchMSCondition.getNumber());
+			pStmt.setString(1, "%" + searchMSCondition.getName() + "%");
+			//pStmt.setString(3, searchMSCondition.getAffliation());
+			//pStmt.setString(4, searchMSCondition.getPilot());
 
 			//SELECT文を実行し結果表を取得
 			ResultSet rs = pStmt.executeQuery();
@@ -40,11 +41,11 @@ public class MSDAO {
 			while(rs.next()){
 				msDTO.setNumber(rs.getString("NUMBER"));
 				msDTO.setName(rs.getString("NAME"));
-				msDTO.setAffiliation(rs.getString("AFFLIATION"));
+				msDTO.setAffiliation(rs.getString("AFFILIATION"));
 				msDTO.setHeight(rs.getDouble("HEIGHT"));
 				msDTO.setWeight(rs.getDouble("WEIGHT"));
 				msDTO.setPilot(rs.getString("PILOT"));
-                msDTO.setImage(rs.getString("IMAGE"));
+				msDTO.setImage(rs.getString("IMAGE"));
 
 			//ArrayListインスタンスにDTOインスタンスを追加
 			msList.add(msDTO);
